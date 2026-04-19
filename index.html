@@ -1,0 +1,786 @@
+<!--
+  ============================================================
+  MAC LAB 웹사이트 - GitHub용 깔끔한 편집 버전
+  ============================================================
+  수정 방법 안내 (GitHub 웹페이지에서 바로 편집하기 쉬운 버전):
+  1) 사이트 이름 수정: "MAC Lab" 검색
+  2) 홈 소개 문구 수정: "HOME / ABOUT" 검색
+  3) People 섹션 수정: "PEOPLE SECTION" 검색
+  4) Research 섹션 수정: "RESEARCH SECTION" 검색
+  5) News & Event 섹션 수정: "NEWS SECTION" 검색
+  6) 새 항목 추가: 같은 형식의 블록 전체를 복사해서 붙여넣기
+     (예: NEWS ITEM / STUDENT CARD)
+  7) 항목 삭제: 해당 <div>...</div> 블록 전체 삭제
+  8) 맨 아래 페이지 이동 스크립트 영역은 수정하지 않기
+  ============================================================
+-->
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MAC Lab - Media Advertising Consumer Lab</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Crimson+Text:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        font-family: 'Outfit', sans-serif;
+        box-sizing: border-box;
+      }
+
+      .font-serif {
+        font-family: 'Crimson Text', serif;
+      }
+
+      .page {
+        display: none;
+      }
+
+      .page.active {
+        display: block;
+      }
+
+      .nav-link {
+        position: relative;
+        transition: color 0.3s ease;
+      }
+
+      .nav-link::after {
+        content: '';
+        position: absolute;
+        bottom: -6px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: currentColor;
+        transition: width 0.3s ease;
+      }
+
+      .nav-link:hover::after,
+      .nav-link.active::after {
+        width: 100%;
+      }
+
+      .card-hover {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .card-hover:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+      }
+
+      .fade-in {
+        animation: fadeIn 0.6s ease forwards;
+        opacity: 0;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(16px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .stagger-1 { animation-delay: 0.1s; }
+      .stagger-2 { animation-delay: 0.2s; }
+      .stagger-3 { animation-delay: 0.3s; }
+      .stagger-4 { animation-delay: 0.4s; }
+      .stagger-5 { animation-delay: 0.5s; }
+
+      .home-slider-shell {
+        overflow: hidden;
+        border-radius: 1.5rem;
+        position: relative;
+        background: #f3f4f6;
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.06);
+      }
+
+      .home-slider-track {
+        display: flex;
+        width: 300%;
+        animation: homeSliderAutoplay 15s infinite;
+      }
+
+      .home-slide {
+        position: relative;
+        flex: 0 0 100%;
+        min-height: 420px;
+        overflow: hidden;
+        background: linear-gradient(135deg, #0f766e, #22c55e, #93c5fd);
+      }
+
+      .home-slide::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgba(0,0,0,0.38), rgba(0,0,0,0.08));
+        z-index: 2;
+      }
+
+      .home-slide-fallback {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 2rem;
+        color: rgba(255, 255, 255, 0.95);
+        font-size: 1.5rem;
+        font-weight: 700;
+        line-height: 1.5;
+        z-index: 0;
+      }
+
+      .home-slide img {
+        width: 100%;
+        height: 420px;
+        object-fit: cover;
+        display: block;
+        position: relative;
+        z-index: 1;
+      }
+
+      .home-slide-caption {
+        position: absolute;
+        left: 1.75rem;
+        bottom: 1.5rem;
+        color: white;
+        font-size: 1.4rem;
+        font-weight: 700;
+        z-index: 3;
+      }
+
+      .home-slider-dots {
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-top: 0.9rem;
+      }
+
+      .home-slider-dots span {
+        width: 0.65rem;
+        height: 0.65rem;
+        border-radius: 9999px;
+        background: #d1d5db;
+        display: inline-block;
+      }
+
+      @keyframes homeSliderAutoplay {
+        0%, 28% { transform: translateX(0); }
+        33%, 61% { transform: translateX(-33.3333%); }
+        66%, 94% { transform: translateX(-66.6666%); }
+        100% { transform: translateX(0); }
+      }
+
+    </style>
+  </head>
+  <body class="min-h-screen bg-white">
+    <div id="app" class="min-h-screen w-full overflow-auto flex flex-col">
+      
+      <!-- ==================== 헤더 / 내비게이션 ==================== -->
+      <nav class="sticky top-0 z-50 bg-white border-b border-green-100 shadow-sm">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+          <div class="flex items-center justify-between gap-6">
+            <a href="#" onclick="navigateTo('home'); return false;" class="text-2xl font-bold text-gray-900 font-serif" id="nav-lab-name">MAC Lab</a>
+            <div class="flex flex-wrap gap-8">
+              <a href="#" onclick="navigateTo('home'); return false;" class="nav-link text-gray-600 hover:text-gray-900 active" data-page="home">Home</a>
+              <a href="#" onclick="navigateTo('people'); return false;" class="nav-link text-gray-600 hover:text-gray-900" data-page="people">People</a>
+              <a href="#" onclick="navigateTo('research'); return false;" class="nav-link text-gray-600 hover:text-gray-900" data-page="research">Research</a>
+              <a href="#" onclick="navigateTo('home'); return false;" class="nav-link text-gray-600 hover:text-gray-900" data-page="news">News &amp; Event</a>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      
+      <!-- ==================== HOME 섹션 시작 ==================== -->
+      <div id="page-home" class="page flex-1">
+        <div class="max-w-7xl mx-auto w-full px-6 py-20">
+                    <!-- HOME / 메인 배너 -->
+          <div class="mb-24">
+            <div class="w-full h-96 bg-gradient-to-br from-emerald-900 via-green-800 to-lime-700 rounded-2xl overflow-hidden fade-in shadow-lg flex items-center justify-center relative mb-12">
+              <svg viewBox="0 0 1200 400" class="w-full h-full absolute inset-0" preserveAspectRatio="xMidYMid slice">
+                <defs>
+                  <linearGradient id="bgGradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color: #0f4d3f; stop-opacity: 1" />
+                    <stop offset="50%" style="stop-color: #2f6b57; stop-opacity: 1" />
+                    <stop offset="100%" style="stop-color: #8abf3f; stop-opacity: 1" />
+                  </linearGradient>
+                  <pattern id="grid2" width="50" height="50" patternUnits="userSpaceOnUse">
+                    <path d="M 50 0 L 0 0 0 50" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1" />
+                  </pattern>
+                </defs>
+                <rect width="1200" height="400" fill="url(#bgGradient2)" />
+                <rect width="1200" height="400" fill="url(#grid2)" />
+                <circle cx="150" cy="80" r="50" fill="rgba(255,255,255,0.15)" />
+                <circle cx="150" cy="80" r="45" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2" />
+                <circle cx="1050" cy="320" r="60" fill="rgba(255,255,255,0.1)" />
+                <circle cx="1050" cy="320" r="55" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="2" />
+                <circle cx="950" cy="80" r="40" fill="rgba(255,255,255,0.12)" />
+                <circle cx="950" cy="80" r="35" fill="none" stroke="rgba(255,255,255,0.28)" stroke-width="2" />
+              </svg>
+              <div class="relative z-10 text-center px-6">
+                <h1 id="hero-lab-name" class="text-5xl md:text-6xl font-bold text-white font-serif mb-3">MAC Lab</h1>
+                <p id="hero-subtitle" class="text-xl md:text-2xl text-white font-light mb-6">Media Advertising Consumer Lab</p>
+                <p id="hero-description" class="text-lg md:text-xl text-white font-light leading-relaxed max-w-2xl">미디어, 광고, 소비자 행동을 연구하고 분석하는 학제적 연구실입니다.</p>
+              </div>
+            </div>
+          </div>
+
+                    <!-- HOME / 소개 -->
+          <div class="mb-24 bg-gradient-to-r from-green-50 to-lime-50 rounded-2xl p-16">
+            <h2 id="about-title" class="text-4xl font-bold text-gray-900 font-serif mb-8 fade-in stagger-1">About Us</h2>
+            <p id="about-content" class="text-lg text-gray-600 max-w-3xl leading-relaxed fade-in stagger-2">미디어, 광고, 소비자 행동을 연구하고 분석하는 학제적 연구실입니다.</p>
+          </div>
+
+
+          <!-- HOME / 사진 슬라이드 -->
+          <div class="mb-24">
+            <h2 class="text-4xl font-bold text-gray-900 font-serif mb-8 fade-in stagger-2">Lab Photos</h2>
+            <p class="text-lg text-gray-600 max-w-3xl leading-relaxed mb-8 fade-in stagger-3">
+              연구실 단체사진과 활동 사진을 Home에서 자동으로 볼 수 있는 섹션입니다.
+            </p>
+
+            <div class="home-slider-shell fade-in stagger-3">
+              <div class="home-slider-track">
+                <div class="home-slide">
+                  <div class="home-slide-fallback">연구실 단체사진<br>images/group/mac-lab-group-2026.jpg</div>
+                  <img
+                    src="images/group/mac-lab-group-2026.jpg"
+                    alt="MAC Lab group photo"
+                    onerror="this.style.opacity='0';"
+                  />
+                  <div class="home-slide-caption">MAC Lab Group Photo</div>
+                </div>
+
+                <div class="home-slide">
+                  <div class="home-slide-fallback">연구실 활동 사진<br>images/group/mac-lab-activity-1.jpg</div>
+                  <img
+                    src="images/group/mac-lab-activity-1.jpg"
+                    alt="MAC Lab activity photo"
+                    onerror="this.style.opacity='0';"
+                  />
+                  <div class="home-slide-caption">Lab Activity Photo</div>
+                </div>
+
+                <div class="home-slide">
+                  <div class="home-slide-fallback">연구실 공간 사진<br>images/group/mac-lab-space-1.jpg</div>
+                  <img
+                    src="images/group/mac-lab-space-1.jpg"
+                    alt="MAC Lab space photo"
+                    onerror="this.style.opacity='0';"
+                  />
+                  <div class="home-slide-caption">Lab Space Photo</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="home-slider-dots">
+              <span></span><span></span><span></span>
+            </div>
+          </div>
+
+
+          <div class="border-t border-gray-300 my-12"></div>
+
+                    <!-- HOME / 연구 주제 -->
+          <div class="mt-24">
+                      <!-- RESEARCH / 연도별 그룹 -->
+          <div class="space-y-12">
+              <div class="card-hover bg-gray-50 rounded-lg p-12 fade-in stagger-2">
+                <div class="flex items-start gap-8">
+                  <div class="text-5xl mt-2">📱</div>
+                  <div class="flex-1">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Digital Media &amp; Advertising</h3>
+                    <p class="text-gray-600 mb-4 leading-relaxed">We analyze social media platforms, content dynamics, user behavior, and advertising trends. Our research focuses on campaign optimization, targeting strategies, and measuring ROI across multi-channel advertising ecosystems.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card-hover bg-gray-50 rounded-lg p-12 fade-in stagger-3">
+                <div class="flex items-start gap-8">
+                  <div class="text-5xl mt-2">🤖</div>
+                  <div class="flex-1">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">AI &amp; Consumer Behavior</h3>
+                    <p class="text-gray-600 mb-4 leading-relaxed">We leverage machine learning, natural language processing, and computer vision to understand consumer decision-making, purchase patterns, and brand preferences. Our AI-driven models include sentiment analysis, recommendation systems, and predictive analytics.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      
+            <!-- ==================== RESEARCH 섹션 시작 ==================== -->
+      <div id="page-research" class="page flex-1">
+        <div class="max-w-7xl mx-auto w-full px-6 py-20">
+          <!-- 여기 수정: Research 페이지 제목 -->
+          <h1 class="text-5xl font-bold text-gray-900 font-serif mb-4 fade-in">Research</h1>
+          <p class="text-lg text-gray-600 mb-16 fade-in stagger-1">MAC Lab의 최신 논문 목록입니다</p>
+          <div class="space-y-12">
+            <div class="fade-in stagger-2">
+              <!-- RESEARCH 연도 2026 -->
+              <h2 class="text-2xl font-bold text-gray-900 mb-6">2026</h2>
+              <div class="space-y-4">
+                <div class="bg-gray-50 rounded-lg p-6 border-l-4 border-green-800">
+                  <h3 class="font-semibold text-gray-900 mb-2">팝업스토어 유형과 AI 음성 응대 방식이 브랜드 태도와 온라인 구전의도에 미치는 영향</h3>
+                  <p class="text-gray-600 text-sm">최민재 · 건국대학교 대학원</p>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-6 border-l-4 border-green-800">
+                  <h3 class="font-semibold text-gray-900 mb-2">샤오홍슈의 이용동기가 웰빙에 미치는 영향</h3>
+                  <p class="text-gray-600 text-sm">왕연방 · 건국대학교 대학원</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="fade-in stagger-3">
+              <!-- RESEARCH 연도 2025 -->
+              <h2 class="text-2xl font-bold text-gray-900 mb-6">2025</h2>
+              <div class="space-y-4">
+                <div class="bg-gray-50 rounded-lg p-6 border-l-4 border-lime-700">
+                  <h3 class="font-semibold text-gray-900 mb-2">AI 캐릭터 채팅 앱 사용자의 지속 사용의도에 관한 연구</h3>
+                  <p class="text-gray-600 text-sm">팽영림 · 건국대학교 대학원</p>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-6 border-l-4 border-lime-700">
+                  <h3 class="font-semibold text-gray-900 mb-2">라이브 커머스의 부정적인 댓글과 매출의 관계 : 제품 유형과 할인 혜택을 중심으로</h3>
+                  <p class="text-gray-600 text-sm">곽현초 · 건국대학교 대학원</p>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-6 border-l-4 border-lime-700">
+                  <h3 class="font-semibold text-gray-900 mb-2">농촌여성 인플루언서의 댓글 분석에 대한 연구 : TikTok의 텍스트 분석을 중심으로</h3>
+                  <p class="text-gray-600 text-sm">설함소 · 건국대학교 대학원</p>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-6 border-l-4 border-lime-700">
+                  <h3 class="font-semibold text-gray-900 mb-2">빌리빌리 브이로그에서 유학생의 자아표현 연구 : 촬영 기법, 자막, 탄막을 중심으로</h3>
+                  <p class="text-gray-600 text-sm">주욱 · 건국대학교 대학원</p>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-6 border-l-4 border-lime-700">
+                  <h3 class="font-semibold text-gray-900 mb-2">위기상황에서 인플루언서의 사과행동에 대한 연구</h3>
+                  <p class="text-gray-600 text-sm">주예축 · 건국대학교 대학원</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="fade-in stagger-4">
+              <!-- RESEARCH 연도 2024 -->
+              <h2 class="text-2xl font-bold text-gray-900 mb-6">2024</h2>
+              <div class="space-y-4">
+                <div class="bg-gray-50 rounded-lg p-6 border-l-4 border-green-700">
+                  <h3 class="font-semibold text-gray-900 mb-2">인플루언서 특성과 소비자와의 관계가 구매의도에 미치는 영향 : 20대 중국 라이브커머스 소비자를 중심으로</h3>
+                  <p class="text-gray-600 text-sm">오하린 · 건국대학교 대학원</p>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-6 border-l-4 border-green-700">
+                  <h3 class="font-semibold text-gray-900 mb-2">팬 커뮤니티 플랫폼의 서비스 품질이 이용자의 소속감 및 협조적 행동에 미치는 영향에 관한 연구 : 위버스를 중심으로</h3>
+                  <p class="text-gray-600 text-sm">곡정양 · 건국대학교 대학원</p>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-6 border-l-4 border-green-700">
+                  <h3 class="font-semibold text-gray-900 mb-2">소셜 미디어에서 동일화 갈망이 온라인 구전행동에 미치는 영향 : 영감의 매개효과를 중심으로</h3>
+                  <p class="text-gray-600 text-sm">천우성 · 건국대학교 대학원</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="fade-in stagger-5">
+              <!-- RESEARCH 연도 2023 -->
+              <h2 class="text-2xl font-bold text-gray-900 mb-6">2023</h2>
+              <div class="space-y-4">
+                <div class="bg-gray-50 rounded-lg p-6 border-l-4 border-emerald-600">
+                  <h3 class="font-semibold text-gray-900 mb-2">글로벌 미디어 기업 틱톡의 경영전략에 관한 연구</h3>
+                  <p class="text-gray-600 text-sm">임범 · 건국대학교 대학원</p>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-6 border-l-4 border-emerald-600">
+                  <h3 class="font-semibold text-gray-900 mb-2">게임형 메타버스의 이용과 외로움, 사회적 지지에 관한 연구 : MZ세대를 중심으로</h3>
+                  <p class="text-gray-600 text-sm">후펑청 · 건국대학교 대학원</p>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-6 border-l-4 border-emerald-600">
+                  <h3 class="font-semibold text-gray-900 mb-2">가상 패션에 대한 소비자 태도 연구 : 소셜미디어 텍스트 분석을 중심으로</h3>
+                  <p class="text-gray-600 text-sm">조슈앙 · 건국대학교 대학원</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== PEOPLE 섹션 시작 ==================== -->
+      <div id="page-people" class="page flex-1">
+        <div class="max-w-7xl mx-auto w-full px-6 pt-10 pb-20">
+          <!-- 여기 수정: People 페이지 제목 -->
+          <h1 class="text-5xl font-bold text-gray-900 font-serif mb-4 fade-in">People</h1>
+          <p class="text-lg text-gray-600 mb-16 fade-in stagger-1">MAC Lab 구성원들입니다</p>
+
+                    <!-- PEOPLE / 교수진 -->
+          <div class="mb-20">
+            <h2 class="text-2xl font-bold text-gray-900 mb-8 fade-in stagger-2">Professor</h2>
+            <div class="card-hover bg-gray-50 rounded-lg p-8 fade-in stagger-3 mb-8">
+              <div class="flex flex-row items-start gap-8 mb-8">
+                <div class="w-40 h-40 bg-gradient-to-br from-green-100 to-lime-100 rounded-lg flex items-center justify-center text-6xl flex-shrink-0">👩‍🏫</div>
+                <div class="flex-1 text-left">
+                  <h3 id="professor-name" class="text-2xl font-bold text-gray-900 mb-2">Kim, Yoojung (김유정)</h3>
+                  <p class="text-green-800 font-semibold mb-4">Professor, Ph.D.</p>
+                  <div class="space-y-3 mb-4">
+                    <div>
+                      <p class="text-sm font-semibold text-gray-700">Research Area</p>
+                      <p class="text-gray-600">Advertising, New Media, Consumer Behavior</p>
+                    </div>
+                    <div>
+                      <p class="text-sm font-semibold text-gray-700">Office</p>
+                      <p class="text-gray-600">연구동 502</p>
+                    </div>
+                  </div>
+                  <div class="flex flex-col gap-2">
+                    <span class="text-gray-600">📧 ykim@konkuk.ac.kr</span>
+                    <span class="text-gray-600">📞 0527</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="border-t border-gray-200 pt-8">
+                <h4 class="text-lg font-semibold text-gray-900 mb-6">Recent Publications</h4>
+                <div class="space-y-3 max-h-96 overflow-y-auto">
+                  <div class="pb-3 border-b border-gray-200"><p class="text-sm font-medium text-gray-900">Motives for Following Social Influencers and Electronic Word-of-Mouth: The Role of Social Capital</p><p class="text-xs text-gray-600 mt-1">International Journal of Communication, 2022-10-01</p></div>
+                  <div class="pb-3 border-b border-gray-200"><p class="text-sm font-medium text-gray-900">When brands get real: the role of authenticity and electronic word-of-mouth in shaping consumer response to brands taking a stand</p><p class="text-xs text-gray-600 mt-1">International Journal of Advertising, 2022-07-01</p></div>
+                  <div class="pb-3 border-b border-gray-200"><p class="text-sm font-medium text-gray-900">When Bad Becomes Good: The Role of Congruence and Product Type in the CSR Initiatives of Stigmatized Industries</p><p class="text-xs text-gray-600 mt-1">Sustainability, 2021-10-01</p></div>
+                  <div class="pb-3 border-b border-gray-200"><p class="text-sm font-medium text-gray-900">The effects of typefaces on ad effectiveness considering psychological perception and perceived communicator's power</p><p class="text-xs text-gray-600 mt-1">Journal of Marketing Communications, 2020-05-01</p></div>
+                  <div class="pb-3 border-b border-gray-200"><p class="text-sm font-medium text-gray-900">When good becomes bad: the role of corporate crisis and issue congruence</p><p class="text-xs text-gray-600 mt-1">International Journal of Advertising, 2020-01-01</p></div>
+                  <div class="pb-3 border-b border-gray-200"><p class="text-sm font-medium text-gray-900">The Impact of Social Networks and Privacy on Electronic Word-of-Mouth in Facebook: Exploring Gender Differences</p><p class="text-xs text-gray-600 mt-1">International Journal of Communication, 2019-11-01</p></div>
+                  <div class="pb-3 border-b border-gray-200"><p class="text-sm font-medium text-gray-900">1인 미디어에서 분노표출에 영향을 미치는선행 요인 연구: 1인 미디어 이용형태와 집단극화를 중심으로</p><p class="text-xs text-gray-600 mt-1">광고PR실학연구, 2019-08-01</p></div>
+                  <div class="pb-3 border-b border-gray-200"><p class="text-sm font-medium text-gray-900">Does mindset matter for using social networking sites?: understanding motivations for and uses of Instagram with growth versus fixed mindset</p><p class="text-xs text-gray-600 mt-1">International Journal of Advertising, 2019-01-01</p></div>
+                  <div class="pb-3 border-b border-gray-200"><p class="text-sm font-medium text-gray-900">Re-examining of consumers' responses toward social media advertising and purchase intention toward luxury products from 2013 to 2018: A retrospective commentary</p><p class="text-xs text-gray-600 mt-1">Journal of Global Fashion Marketing, 2016-08-01</p></div>
+                  <div class="pb-3 border-b border-gray-200"><p class="text-sm font-medium text-gray-900">Cultural orientation affects consumer responses to charity advertising</p><p class="text-xs text-gray-600 mt-1">Social Behavior and Personality, 2016-05-01</p></div>
+                  <div class="pb-3 border-b border-gray-200"><p class="text-sm font-medium text-gray-900">To click or not to click? Investigating antecedents of advertisement clicking on Facebook</p><p class="text-xs text-gray-600 mt-1">Social Behavior and Personality, 2015-03-01</p></div>
+                  <div class="pb-3 border-b border-gray-200"><p class="text-sm font-medium text-gray-900">&quot;I Drink It Anyway and I Know I Shouldn't&quot;: Understanding Green Consumers' Positive Evaluations of Norm-violating Non-green Products and Misleading Green Advertising</p><p class="text-xs text-gray-600 mt-1">Environmental Communication: A Journal of Nature and Culture, 2014-03-01</p></div>
+                  <div class="pb-3 border-b border-gray-200"><p class="text-sm font-medium text-gray-900">Networking for Philanthropy: Increasing Volunteer Behavior via Social Networking Sites</p><p class="text-xs text-gray-600 mt-1">Cyberpsychology, Behavior and Social Networking, 2013-09-01</p></div>
+                  <div class="pb-3 border-b border-gray-200"><p class="text-sm font-medium text-gray-900">Changing the stakes: A content analysis of Internet gambling advertising in TV poker programs between 2006 and 2010</p><p class="text-xs text-gray-600 mt-1">Journal of Business Research, 2013-06-01</p></div>
+                  <div class="pb-3 border-b border-gray-200"><p class="text-sm font-medium text-gray-900">Understanding Consumers' Social Media Advertising and Purchase Intention toward Luxury Products</p><p class="text-xs text-gray-600 mt-1">Journal of Global Fashion Marketing, 2011-03-01</p></div>
+                  <div class="pb-3 border-b border-gray-200"><p class="text-sm font-medium text-gray-900">Cultural Difference in Motivations for Using Social Network Sites: A Comparative Study of American and Korean Users</p><p class="text-xs text-gray-600 mt-1">Computers in Human Behavior, 2011-03-01</p></div>
+                  <div class="pb-3 border-b border-gray-200"><p class="text-sm font-medium text-gray-900">Determinants of consumer engagement in electronic word-of-mouth (eWOM) in social networking sites</p><p class="text-xs text-gray-600 mt-1">International Journal of Advertising, 2011-02-01</p></div>
+                  <div class="pb-3 border-b border-gray-200"><p class="text-sm font-medium text-gray-900">Bridging or Bonding?: A Cross-Cultural Investigation of Relationships in Social Networking Sites</p><p class="text-xs text-gray-600 mt-1">Information, Communication &amp; Society, 2010-10-01</p></div>
+                  <div class="pb-3"><p class="text-sm font-medium text-gray-900">Antecedents and Consequences of Consumer Participation in Virtual Brand Communities in Social Networking</p><p class="text-xs text-gray-600 mt-1">Journal of Global Marketing</p></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+                    <!-- PEOPLE / 현재 학생들 -->
+          <div class="mb-20">
+            <h2 class="text-2xl font-bold text-gray-900 mb-8 fade-in stagger-2">Current Students</h2>
+            <div class="mb-12">
+              <h3 class="text-lg font-semibold text-gray-800 mb-6 fade-in stagger-3">Ph.D. Students</h3>
+                            <!-- 박사과정 학생 카드: 다른 박사과정 학생을 추가하려면 이 카드 블록 전체를 복사하세요 -->
+              <div class="grid md:grid-cols-2 gap-6">
+                <div class="card-hover bg-gray-50 rounded-lg p-6 fade-in stagger-3">
+                  <div class="flex gap-4">
+                    <div class="w-16 h-16 bg-gradient-to-br from-lime-100 to-green-100 rounded-lg flex items-center justify-center text-3xl flex-shrink-0">👨‍💻</div>
+                    <div>
+                      <h4 class="text-lg font-semibold text-gray-900">LIN FAN (임범)</h4>
+                      <p class="text-gray-600 text-sm">Ph.D. Student</p>
+                      <p class="text-green-800 text-sm mt-1">AI 광고 분석</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h3 class="text-lg font-semibold text-gray-800 mb-6 fade-in stagger-3">Master's Students</h3>
+                            <!-- 석사과정 학생 카드: 다른 석사과정 학생을 추가하려면 아래 카드 블록 하나를 복사하세요 -->
+              <div class="grid md:grid-cols-3 gap-4">
+                <div class="card-hover bg-gray-50 rounded-lg p-6 text-center fade-in stagger-3">
+                  <div class="text-4xl mb-3">👨‍🎓</div>
+                  <h4 class="font-semibold text-gray-900">최영준</h4>
+                  <p class="text-gray-600 text-sm">M.S. Student</p>
+                  <p class="text-green-800 text-sm mt-2">디지털 트렌드 분석</p>
+                </div>
+                <div class="card-hover bg-gray-50 rounded-lg p-6 text-center fade-in stagger-4">
+                  <div class="text-4xl mb-3">👩‍🎓</div>
+                  <h4 class="font-semibold text-gray-900">정하나</h4>
+                  <p class="text-gray-600 text-sm">M.S. Student</p>
+                  <p class="text-green-800 text-sm mt-2">감정 분석 연구</p>
+                </div>
+                <div class="card-hover bg-gray-50 rounded-lg p-6 text-center fade-in stagger-5">
+                  <div class="text-4xl mb-3">👨‍🎓</div>
+                  <h4 class="font-semibold text-gray-900">이동훈</h4>
+                  <p class="text-gray-600 text-sm">M.S. Student</p>
+                  <p class="text-green-800 text-sm mt-2">광고 캠페인 분석</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+                    <!-- PEOPLE / 졸업생 -->
+          <div>
+            <h2 class="text-2xl font-bold text-gray-900 mb-8 fade-in stagger-2">Alumni</h2>
+            <div class="bg-gray-50 rounded-lg p-8 fade-in stagger-3">
+              <div class="grid md:grid-cols-2 gap-8">
+                <div>
+                  <h4 class="font-semibold text-gray-900 mb-4">Ph.D. Graduates</h4>
+                  <ul class="space-y-2 text-gray-600">
+                    <li>• 홍길동 (2022) - 現 마케팅 연구원</li>
+                    <li>• 김미영 (2021) - 現 IT 기업 데이터 분석가</li>
+                    <li>• 이재훈 (2020) - 現 광고 에이전시 전략 팀</li>
+                  </ul>
+                </div>
+                <div>
+                  <h4 class="font-semibold text-gray-900 mb-4">Master's Graduates</h4>
+                  <ul class="space-y-2 text-gray-600">
+                    <li>• 최수진 (2023) - 現 E-commerce 회사</li>
+                    <li>• 구현준 (2023) - 現 미디어 회사</li>
+                    <li>• 송하은 (2022) - 現 유명 브랜드 마케팅</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      
+      <!-- ==================== NEWS 섹션 시작 ==================== -->
+      <div id="page-news" class="page flex-1">
+        <div class="max-w-7xl mx-auto w-full px-6 pt-10 pb-20">
+          <!-- 여기 수정: News 페이지 제목 -->
+          <h1 class="text-5xl font-bold text-gray-900 font-serif mb-4">News &amp; Event</h1>
+          <p class="text-lg text-gray-600 mb-16">광고·PR 관련 주요 학회 일정 및 행사입니다</p>
+
+                    <!-- NEWS / 행사 카드 목록 -->
+          <div class="space-y-6">
+                        <!-- 뉴스 항목 01: 새 행사를 추가하려면 이 뉴스 카드 블록 전체를 복사하세요 -->
+            <div class="card-hover bg-gray-50 rounded-lg p-8 border-l-4 border-indigo-500">
+              <span class="text-sm text-gray-500">2026.05.15~16 | 호텔현대 바이 라한 목포</span>
+              <h3 class="text-xl font-bold mt-2">DAX(Digital AI Transformation) in ADPR</h3>
+              <p class="text-gray-600 mt-2">AI-인간 협업과 공진화</p>
+              <div class="mt-4 flex flex-wrap gap-2">
+                <span class="inline-block px-3 py-1 bg-indigo-100 text-indigo-800 text-sm font-medium rounded-full">한국광고홍보학회</span>
+              </div>
+            </div>
+            <div class="card-hover bg-gray-50 rounded-lg p-8 border-l-4 border-blue-400">
+              <span class="text-sm text-gray-500">2026.04.04 | 고려대학교 현대자동차경영관</span>
+              <h3 class="text-xl font-bold mt-2">소비자 인 더 루프</h3>
+              <div class="mt-4 flex flex-wrap gap-2">
+                <span class="inline-block px-3 py-1 bg-blue-100 text-blue-800 text-sm font-medium rounded-full">한국광고학회</span>
+                <span class="inline-block px-3 py-1 bg-green-100 text-green-800 text-sm font-medium rounded-full">발표: 최민재님</span>
+              </div>
+            </div>
+            <div class="card-hover bg-gray-50 rounded-lg p-8 border-l-4 border-blue-500">
+              <span class="text-sm text-gray-500">2025.11.15 | 국민대학교 북악관</span>
+              <h3 class="text-xl font-bold mt-2">인간-AI 협업</h3>
+              <p class="text-gray-600 mt-2">효율성과 신뢰의 재구성</p>
+              <div class="mt-4 flex flex-wrap gap-2">
+                <span class="inline-block px-3 py-1 bg-indigo-100 text-indigo-800 text-sm font-medium rounded-full">한국광고홍보학회</span>
+                <span class="inline-block px-3 py-1 bg-green-100 text-green-800 text-sm font-medium rounded-full">발표: 최민재님, 왕연방님</span>
+              </div>
+            </div>
+            <div class="card-hover bg-gray-50 rounded-lg p-8 border-l-4 border-cyan-500">
+              <span class="text-sm text-gray-500">2025.10.24~25 | 소노캄 여수</span>
+              <h3 class="text-xl font-bold mt-2">광고는 현재 진형형입니다</h3>
+              <div class="mt-4 flex flex-wrap gap-2">
+                <span class="inline-block px-3 py-1 bg-blue-100 text-blue-800 text-sm font-medium rounded-full">한국광고학회</span>
+              </div>
+            </div>
+            <div class="card-hover bg-gray-50 rounded-lg p-8 border-l-4 border-green-500">
+              <span class="text-sm text-gray-500">2025.05.23~24 | 인천 인스파이어 호텔 앤 리조트 오션타워</span>
+              <h3 class="text-xl font-bold mt-2">AI와 CX</h3>
+              <p class="text-gray-600 mt-2">광고·PR이 만나는 새로운 고객 경험</p>
+              <div class="mt-4 flex flex-wrap gap-2">
+                <span class="inline-block px-3 py-1 bg-indigo-100 text-indigo-800 text-sm font-medium rounded-full">한국광고홍보학회</span>
+              </div>
+            </div>
+            <div class="card-hover bg-gray-50 rounded-lg p-8 border-l-4 border-green-400">
+              <span class="text-sm text-gray-500">2025.04.04 | 카카오 AI캠퍼스</span>
+              <h3 class="text-xl font-bold mt-2">혁신·데이터·크리에이티비티</h3>
+              <p class="text-gray-600 mt-2">광고의 새로운 역할 탐색</p>
+              <div class="mt-4 flex flex-wrap gap-2">
+                <span class="inline-block px-3 py-1 bg-blue-100 text-blue-800 text-sm font-medium rounded-full">한국광고학회</span>
+                <span class="inline-block px-3 py-1 bg-green-100 text-green-800 text-sm font-medium rounded-full">발표: 주예축님</span>
+              </div>
+            </div>
+            <div class="card-hover bg-gray-50 rounded-lg p-8 border-l-4 border-purple-500">
+              <span class="text-sm text-gray-500">2024.11.15 | 서울 가든 호텔</span>
+              <h3 class="text-xl font-bold mt-2">개인화 알고리즘과 소비자 프라이버시</h3>
+              <div class="mt-4 flex flex-wrap gap-2"><span class="inline-block px-3 py-1 bg-indigo-100 text-indigo-800 text-sm font-medium rounded-full">한국광고홍보학회</span></div>
+            </div>
+            <div class="card-hover bg-gray-50 rounded-lg p-8 border-l-4 border-violet-500">
+              <span class="text-sm text-gray-500">2024.10.25 | 세이지우드 홍천</span>
+              <h3 class="text-xl font-bold mt-2">도파민 과잉의 시대: 광고의 역할</h3>
+              <div class="mt-4 flex flex-wrap gap-2"><span class="inline-block px-3 py-1 bg-blue-100 text-blue-800 text-sm font-medium rounded-full">한국광고학회</span></div>
+            </div>
+            <div class="card-hover bg-gray-50 rounded-lg p-8 border-l-4 border-orange-500">
+              <span class="text-sm text-gray-500">2024.05.24~25 | 경주 힐튼 호텔</span>
+              <h3 class="text-xl font-bold mt-2">생성형 AI 시대의 광고와 PR</h3>
+              <p class="text-gray-600 mt-2">도전과 기회</p>
+              <div class="mt-4 flex flex-wrap gap-2"><span class="inline-block px-3 py-1 bg-indigo-100 text-indigo-800 text-sm font-medium rounded-full">한국광고홍보학회</span></div>
+            </div>
+            <div class="card-hover bg-gray-50 rounded-lg p-8 border-l-4 border-orange-400">
+              <span class="text-sm text-gray-500">2024.04.06 | 고려대 SK미래관</span>
+              <h3 class="text-xl font-bold mt-2">새로운 기술과 인간의 미래: 인공지능 시대의 광고</h3>
+              <div class="mt-4 flex flex-wrap gap-2"><span class="inline-block px-3 py-1 bg-blue-100 text-blue-800 text-sm font-medium rounded-full">한국광고학회</span></div>
+            </div>
+            <div class="card-hover bg-gray-50 rounded-lg p-8 border-l-4 border-pink-500">
+              <span class="text-sm text-gray-500">2023.11.17 | 이태원 몬드리안 호텔</span>
+              <h3 class="text-xl font-bold mt-2">디지털 업스킬링 시대의 광고와 PR</h3>
+              <div class="mt-4 flex flex-wrap gap-2"><span class="inline-block px-3 py-1 bg-indigo-100 text-indigo-800 text-sm font-medium rounded-full">한국광고홍보학회</span></div>
+            </div>
+            <div class="card-hover bg-gray-50 rounded-lg p-8 border-l-4 border-pink-400">
+              <span class="text-sm text-gray-500">2023.10.20 | 그랜드 하얏트 제주</span>
+              <h3 class="text-xl font-bold mt-2">경제 위기와 광고의 역할</h3>
+              <div class="mt-4 flex flex-wrap gap-2"><span class="inline-block px-3 py-1 bg-blue-100 text-blue-800 text-sm font-medium rounded-full">한국광고학회</span></div>
+            </div>
+            <div class="card-hover bg-gray-50 rounded-lg p-8 border-l-4 border-sky-500">
+              <span class="text-sm text-gray-500">2023.07.05~06 | 강릉 라카이 샌드파인</span>
+              <h3 class="text-xl font-bold mt-2">하계 대학원생 학술세미나</h3>
+              <div class="mt-4 flex flex-wrap gap-2">
+                <span class="inline-block px-3 py-1 bg-cyan-100 text-cyan-800 text-sm font-medium rounded-full">한국소비자광고심리학회</span>
+                <span class="inline-block px-3 py-1 bg-green-100 text-green-800 text-sm font-medium rounded-full">발표: 후펑청 님</span>
+              </div>
+            </div>
+            <div class="card-hover bg-gray-50 rounded-lg p-8 border-l-4 border-indigo-400">
+              <span class="text-sm text-gray-500">2023.05.19~20 | 여수 히든베이호텔</span>
+              <h3 class="text-xl font-bold mt-2">다시 봄, 그리고 광고와 PR</h3>
+              <div class="mt-4 flex flex-wrap gap-2"><span class="inline-block px-3 py-1 bg-indigo-100 text-indigo-800 text-sm font-medium rounded-full">한국광고홍보학회</span></div>
+            </div>
+            <div class="card-hover bg-gray-50 rounded-lg p-8 border-l-4 border-indigo-300">
+              <span class="text-sm text-gray-500">2023.04.08 | 연세대학교 연희관</span>
+              <h3 class="text-xl font-bold mt-2">패러다임의 변화: 디지털 도약 시대의 광고</h3>
+              <div class="mt-4 flex flex-wrap gap-2"><span class="inline-block px-3 py-1 bg-blue-100 text-blue-800 text-sm font-medium rounded-full">한국광고학회</span></div>
+            </div>
+            <div class="card-hover bg-gray-50 rounded-lg p-8 border-l-4 border-emerald-500">
+              <span class="text-sm text-gray-500">2022.11.19 | 선문대학교 아산캠퍼스 본관</span>
+              <h3 class="text-xl font-bold mt-2">미디어융합시대의 광고×PR</h3>
+              <div class="mt-4 flex flex-wrap gap-2"><span class="inline-block px-3 py-1 bg-indigo-100 text-indigo-800 text-sm font-medium rounded-full">한국광고홍보학회</span></div>
+            </div>
+            <div class="card-hover bg-gray-50 rounded-lg p-8 border-l-4 border-emerald-400">
+              <span class="text-sm text-gray-500">2022.10.21 | 파크하얏트 부산</span>
+              <h3 class="text-xl font-bold mt-2">함께 만드는 광고의 미래: 넥스트 노멀 시대의 광고</h3>
+              <div class="mt-4 flex flex-wrap gap-2"><span class="inline-block px-3 py-1 bg-blue-100 text-blue-800 text-sm font-medium rounded-full">한국광고학회</span></div>
+            </div>
+            <div class="card-hover bg-gray-50 rounded-lg p-8 border-l-4 border-teal-500">
+              <span class="text-sm text-gray-500">2022.05.13~14 | 양양 쏠비치</span>
+              <h3 class="text-xl font-bold mt-2">전환 시대의 광고와 PR의 역할</h3>
+              <div class="mt-4 flex flex-wrap gap-2"><span class="inline-block px-3 py-1 bg-indigo-100 text-indigo-800 text-sm font-medium rounded-full">한국광고홍보학회</span></div>
+            </div>
+            <div class="card-hover bg-gray-50 rounded-lg p-8 border-l-4 border-teal-400">
+              <span class="text-sm text-gray-500">2022.04.08 | 중앙대학교 100관</span>
+              <h3 class="text-xl font-bold mt-2">웹 3.0 시대의 광고</h3>
+              <div class="mt-4 flex flex-wrap gap-2"><span class="inline-block px-3 py-1 bg-blue-100 text-blue-800 text-sm font-medium rounded-full">한국광고학회</span></div>
+            </div>
+            <div class="card-hover bg-gray-50 rounded-lg p-8 border-l-4 border-lime-500">
+              <span class="text-sm text-gray-500">2021.11.20 | COEX 컨퍼런스홀</span>
+              <h3 class="text-xl font-bold mt-2">위드 코로나 시대의 광고와 PR</h3>
+              <div class="mt-4 flex flex-wrap gap-2"><span class="inline-block px-3 py-1 bg-indigo-100 text-indigo-800 text-sm font-medium rounded-full">한국광고홍보학회</span></div>
+            </div>
+            <div class="card-hover bg-gray-50 rounded-lg p-8 border-l-4 border-lime-400">
+              <span class="text-sm text-gray-500">2021.10.22 | 소노별 변산</span>
+              <h3 class="text-xl font-bold mt-2">뉴노멀 시대의 노멀화 - 급변하는 세상, 선도하는 광고 -</h3>
+              <div class="mt-4 flex flex-wrap gap-2"><span class="inline-block px-3 py-1 bg-blue-100 text-blue-800 text-sm font-medium rounded-full">한국광고학회</span></div>
+            </div>
+            <div class="card-hover bg-gray-50 rounded-lg p-8 border-l-4 border-yellow-500">
+              <span class="text-sm text-gray-500">2021.05.14~15 | 부산 그랜드조선호텔</span>
+              <h3 class="text-xl font-bold mt-2">사회적 가치를 더하는 광고와 PR</h3>
+              <div class="mt-4 flex flex-wrap gap-2"><span class="inline-block px-3 py-1 bg-indigo-100 text-indigo-800 text-sm font-medium rounded-full">한국광고홍보학회</span></div>
+            </div>
+            <div class="card-hover bg-gray-50 rounded-lg p-8 border-l-4 border-yellow-400">
+              <span class="text-sm text-gray-500">2021.04.02 | 강원도 고성 소노캄 델피노</span>
+              <h3 class="text-xl font-bold mt-2">지속가능한 세상을 향한 광고</h3>
+              <div class="mt-4 flex flex-wrap gap-2"><span class="inline-block px-3 py-1 bg-blue-100 text-blue-800 text-sm font-medium rounded-full">한국광고학회</span></div>
+            </div>
+            <div class="card-hover bg-gray-50 rounded-lg p-8 border-l-4 border-red-500">
+              <span class="text-sm text-gray-500">2020.11.20 | 중앙대학교 310관(백주년 기념관)</span>
+              <h3 class="text-xl font-bold mt-2">The Next Normal: 광고와 PR의 역할</h3>
+              <div class="mt-4 flex flex-wrap gap-2"><span class="inline-block px-3 py-1 bg-indigo-100 text-indigo-800 text-sm font-medium rounded-full">한국광고홍보학회</span></div>
+            </div>
+            <div class="card-hover bg-gray-50 rounded-lg p-8 border-l-4 border-red-400">
+              <span class="text-sm text-gray-500">2020.10.30 | 온라인 진행</span>
+              <h3 class="text-xl font-bold mt-2">포스트 코로나 광고, 회복을 생각한다</h3>
+              <div class="mt-4 flex flex-wrap gap-2"><span class="inline-block px-3 py-1 bg-blue-100 text-blue-800 text-sm font-medium rounded-full">한국광고학회</span></div>
+            </div>
+            <div class="card-hover bg-gray-50 rounded-lg p-8 border-l-4 border-rose-500">
+              <span class="text-sm text-gray-500">2020.05.15~16 | 부산 힐튼 호텔</span>
+              <h3 class="text-xl font-bold mt-2">불확실 시대, 광고 PR 커뮤니케이션의 역할</h3>
+              <div class="mt-4 flex flex-wrap gap-2"><span class="inline-block px-3 py-1 bg-indigo-100 text-indigo-800 text-sm font-medium rounded-full">한국광고홍보학회</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== 푸터 시작 ==================== -->
+      <footer class="bg-green-50 border-t border-green-100 py-12 mt-auto">
+        <div class="max-w-7xl mx-auto px-6">
+          <div class="grid md:grid-cols-3 gap-8 mb-8">
+            <div>
+              <h4 class="font-semibold text-gray-900 mb-4">MAC Lab</h4>
+              <p class="text-gray-600 text-sm">Media Advertising Consumer Lab</p>
+            </div>
+            <div>
+              <h4 class="font-semibold text-gray-900 mb-4">Contact</h4>
+              <p class="text-gray-600 text-sm">📧 maclab@snu.ac.kr</p>
+              <p class="text-gray-600 text-sm">📞 02-XXX-XXXX</p>
+            </div>
+            <div>
+              <h4 class="font-semibold text-gray-900 mb-4">Address</h4>
+              <p class="text-gray-600 text-sm">건국대학교 경영대학</p>
+              <p class="text-gray-600 text-sm">경영학 빌딩 302호</p>
+            </div>
+          </div>
+          <div class="border-t border-gray-300 pt-8 text-center">
+            <p class="text-gray-600 text-sm">© 2026 MAC Lab.</p>
+          </div>
+        </div>
+      </footer>
+      <!-- ==================== 푸터 끝 ==================== -->
+    </div>
+
+
+    
+    <!-- ==================== 페이지 이동 스크립트 (삭제하지 마세요) ==================== -->
+    <script>
+      function navigateTo(pageId) {
+        const pages = document.querySelectorAll('.page');
+        pages.forEach((page) => page.classList.remove('active'));
+
+        const targetPage = document.getElementById(`page-${pageId}`);
+        if (!targetPage) {
+          console.error(`Page not found: ${pageId}`);
+          return false;
+        }
+
+        targetPage.classList.add('active');
+
+        const links = document.querySelectorAll('.nav-link');
+        links.forEach((link) => link.classList.remove('active'));
+
+        const activeLink = document.querySelector(`[data-page="${pageId}"]`);
+        if (activeLink) {
+          activeLink.classList.add('active');
+        }
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return false;
+      }
+
+      function runNavigationChecks() {
+        console.assert(typeof navigateTo === 'function', 'navigateTo should be defined');
+        console.assert(document.getElementById('page-home'), 'page-home should exist');
+        console.assert(document.getElementById('page-people'), 'page-people should exist');
+        console.assert(document.getElementById('page-research'), 'page-research should exist');
+        console.assert(document.getElementById('page-news'), 'page-news should exist');
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        runNavigationChecks();
+        navigateTo('home');
+      });
+    </script>
+  </body>
+</html>
